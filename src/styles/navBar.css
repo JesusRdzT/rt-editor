@@ -1,0 +1,31 @@
+.navigation{
+    background-color: transparent;
+    display: flex;
+    align-items: flex-end;
+    border-bottom: solid 1px gray;
+}
+
+#title{
+    font-size: 3rem;
+    margin: 10px 20px 10px 0px;
+    color: #200060; 
+    padding: 0;
+}
+
+/* List menu styling */
+.navigation ul{ 
+    list-style:none;
+    padding: 0;
+    display: flex;
+}
+
+.navigation ul li a{
+    text-decoration: solid; 
+    color: #444444;
+    font-size: 1.5rem;
+    margin-left: 10px;
+}
+.navigation ul li a:hover{
+    transition-duration: 350ms;
+    color: #ffaa00;
+}
