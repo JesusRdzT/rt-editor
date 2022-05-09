@@ -3,10 +3,8 @@ import { useParams } from 'react-router-dom'
 import "../../styles/notepadEditor.css"
 
 const Editor = () => {
-
-    let [text, setText] = useState("hola este es un texto");
-    const [ notepadInfo, setNotepadInfo ] = useState({});
-    const [ storedInfo, setStoredInfo ] = useState("");
+    
+    const [ storedInfo, setStoredInfo ] = useState(null);
 
     let page = useRef();
 
@@ -37,31 +35,44 @@ const Editor = () => {
             shift = false;
         }
     }
+    
+    useEffect(() => {
+        let storedInfoJSON = JSON.parse(window.localStorage.getItem(params.title));
+        setStoredInfo(storedInfoJSON);
+    }, []);
 
-    useEffect(()=>{
-        //Allows images to be edited. 
+    // useEffect(()=>{
+    //     //Allows images to be edited. 
+        
+    // },[]);
+        
+    useEffect(() => {
         document.execCommand('enableObjectResizing', false, true);
-        // page.current.addEventListener("keydown", keyDownEvent, false);
-        // page.current.addEventListener("keyup", keyUpEvent, false);
+        // setNotepadInfo(JSON.parse(storedInfo));
+        // setText(notepadInfo.content);
+        // console.log(storedInfo);
+        // console.log(JSON.parse(storedInfo));
+        // page.current.innerHTML = notepadInfo.content;
+        if(storedInfo){
+            // setNotepadInfo(storedInfo);
+            page.current.innerHTML = storedInfo["content"];
+            function onUnload(e){
+                // e.preventDefault(); 
+                if(storedInfo){
+                    let auxNotepadInfo = storedInfo; 
+                    auxNotepadInfo['content'] = page.current.innerHTML;
+                    window.localStorage.setItem(params.title, JSON.stringify(auxNotepadInfo));
+                }
+                return undefined;
+            };
+    
+            window.addEventListener("beforeunload", onUnload);
+    
+            return () => window.removeEventListener("beforeunload", onUnload)
+        }
 
-        let storedData = window.localStorage.getItem(params.title);
-        setStoredInfo(storedData);
-        setNotepadInfo(JSON.parse(storedData));
-        setText(notepadInfo.content);
-        console.log(storedData);
-        console.log(JSON.parse(storedData));
-        page.current.innerHTML = notepadInfo.content;
 
-        window.addEventListener('beforeunload', function (e){
-            e.preventDefault(); 
-            let auxNotepadInfo = JSON.parse(storedData); 
-            auxNotepadInfo['content'] = page.current.innerHTML;
-            // setNotepadInfo(auxNotepadInfo);
-            // window.localStorage.setItem(params.title, JSON.stringify(notepadInfo));
-            console.log(auxNotepadInfo);    
-            // alert("note salgas");
-        });
-    },[]);
+    }, [storedInfo]);
 
     function applyEffect(event){
         document.execCommand(event.target.id, false, null);
@@ -150,8 +161,11 @@ const Editor = () => {
                     <span>Image</span>
                 </button>
             </div> {/* End of toolbar */}
-            <div className="page" id="page" contentEditable="true" ref={page} onChange={(event)=>setText(event.target.innerHTML)}>
+            
+            {/* Begin editor area */}
+            <div className="page" id="page" contentEditable="true" ref={page}>
             </div>
+            {/* End of editor area */}
         </div>
     )
 }
